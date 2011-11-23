@@ -2541,7 +2541,7 @@ int Start(int argc, char *argv[]) {
   v8::Context::Scope context_scope(context);
 
   // Create the main node::Isolate object
-  Isolate::New(uv_default_loop());
+  Isolate* isolate = Isolate::New(uv_default_loop());
 
   Handle<Object> process = SetupProcessObject(argc, argv);
   v8_typed_array::AttachBindings(context->Global());
@@ -2558,6 +2558,8 @@ int Start(int argc, char *argv[]) {
   uv_run(NODE_LOOP());
 
   EmitExit(process);
+
+  isolate->Dispose();
 
 #ifndef NDEBUG
   // Clean up.
