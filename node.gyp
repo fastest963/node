@@ -128,6 +128,7 @@
         'PLATFORM="<(OS)"',
         '_LARGEFILE_SOURCE',
         '_FILE_OFFSET_BITS=64',
+        'NODE_WANT_INTERNALS=1',
       ],
 
       'conditions': [
