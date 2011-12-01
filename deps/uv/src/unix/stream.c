@@ -102,7 +102,7 @@ int uv__stream_open(uv_stream_t* stream, int fd, int flags) {
 
     /* TODO Use delay the user passed in. */
     if ((stream->flags & UV_TCP_KEEPALIVE) &&
-        uv__tcp_keepalive((uv_tcp_t*)stream, 1, 60)) {
+        uv__tcp_keepalive((uv_tcp_t*)stream, 1, 60, 60, 8)) {
       return -1;
     }
   }
