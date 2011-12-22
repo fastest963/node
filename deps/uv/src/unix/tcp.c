@@ -255,7 +255,8 @@ int uv__tcp_nodelay(uv_tcp_t* handle, int enable) {
 }
 
 
-int uv__tcp_keepalive(uv_tcp_t* handle, int enable, unsigned int delay) {
+int uv__tcp_keepalive(uv_tcp_t* handle, int enable, unsigned int delay,
+    unsigned int interval, unsigned int count) {
   if (setsockopt(handle->fd,
                  SOL_SOCKET,
                  SO_KEEPALIVE,
@@ -287,6 +288,28 @@ int uv__tcp_keepalive(uv_tcp_t* handle, int enable, unsigned int delay) {
   }
 #endif
 
+#ifdef TCP_KEEPINTVL
+  if (enable && interval && setsockopt(handle->fd,
+                                       IPPROTO_TCP,
+                                       TCP_KEEPINTVL,
+                                       &interval,
+                                       sizeof interval) == -1) {
+    uv__set_sys_error(handle->loop, errno);
+    return -1;
+  }
+#endif
+
+#ifdef TCP_KEEPCNT
+  if (enable && count && setsockopt(handle->fd,
+                                    IPPROTO_TCP,
+                                    TCP_KEEPCNT,
+                                    &count,
+                                    sizeof count) == -1) {
+    uv__set_sys_error(handle->loop, errno);
+    return -1;
+  }
+#endif
+
   return 0;
 }
 
@@ -304,8 +327,8 @@ int uv_tcp_nodelay(uv_tcp_t* handle, int enable) {
 }
 
 
-int uv_tcp_keepalive(uv_tcp_t* handle, int enable, unsigned int delay) {
-  if (handle->fd != -1 && uv__tcp_keepalive(handle, enable, delay))
+int uv_tcp_keepalive(uv_tcp_t* handle, int enable, unsigned int delay, unsigned int interval, unsigned int count) {
+  if (handle->fd != -1 && uv__tcp_keepalive(handle, enable, delay, interval, count))
     return -1;
 
   if (enable)

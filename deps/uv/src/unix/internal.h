@@ -173,7 +173,7 @@ int uv__connect(uv_connect_t* req, uv_stream_t* stream, struct sockaddr* addr,
 /* tcp */
 int uv_tcp_listen(uv_tcp_t* tcp, int backlog, uv_connection_cb cb);
 int uv__tcp_nodelay(uv_tcp_t* handle, int enable);
-int uv__tcp_keepalive(uv_tcp_t* handle, int enable, unsigned int delay);
+int uv__tcp_keepalive(uv_tcp_t* handle, int enable, unsigned int delay, unsigned int interval, unsigned int count);
 
 /* pipe */
 int uv_pipe_listen(uv_pipe_t* handle, int backlog, uv_connection_cb cb);

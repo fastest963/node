@@ -483,9 +483,11 @@ UV_EXTERN int uv_tcp_nodelay(uv_tcp_t* handle, int enable);
 /* Enable/disable TCP keep-alive.
  *
  * `ms` is the initial delay in seconds, ignored when `enable` is zero.
+ * interval is the keep-alive probe interval after the initial delay. Doesn't work in Windows
+ * count is the number of keep-alives that fail before thinking the socket is dead. Doesn't work in Windows
  */
 UV_EXTERN int uv_tcp_keepalive(uv_tcp_t* handle, int enable,
-    unsigned int delay);
+    unsigned int delay, unsigned int interval, unsigned int count);
 
 /*
  * This setting applies to Windows only.

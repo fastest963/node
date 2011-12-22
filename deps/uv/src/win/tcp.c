@@ -59,7 +59,8 @@ static int uv__tcp_nodelay(uv_tcp_t* handle, SOCKET socket, int enable) {
 }
 
 
-static int uv__tcp_keepalive(uv_tcp_t* handle, SOCKET socket, int enable, unsigned int delay) {
+static int uv__tcp_keepalive(uv_tcp_t* handle, SOCKET socket, int enable, unsigned int delay,
+    unsigned int interval, unsigned int count) {
   if (setsockopt(socket,
                  SOL_SOCKET,
                  SO_KEEPALIVE,
@@ -77,6 +78,11 @@ static int uv__tcp_keepalive(uv_tcp_t* handle, SOCKET socket, int enable, unsign
     uv__set_sys_error(handle->loop, errno);
     return -1;
   }
+
+  /*
+   * interval and count cannot be applied without registry
+   * changes and system reboot
+   */
 
   return 0;
 }
@@ -132,7 +138,7 @@ static int uv_tcp_set_socket(uv_loop_t* loop, uv_tcp_t* handle,
 
   /* TODO: Use stored delay. */
   if ((handle->flags & UV_HANDLE_TCP_KEEPALIVE) &&
-      uv__tcp_keepalive(handle, socket, 1, 60)) {
+      uv__tcp_keepalive(handle, socket, 1, 60, 60, 8)) {
     return -1;
   }
 
@@ -1059,9 +1065,9 @@ int uv_tcp_nodelay(uv_tcp_t* handle, int enable) {
 }
 
 
-int uv_tcp_keepalive(uv_tcp_t* handle, int enable, unsigned int delay) {
+int uv_tcp_keepalive(uv_tcp_t* handle, int enable, unsigned int delay, unsigned int interval, unsigned int count) {
   if (handle->socket != INVALID_SOCKET &&
-      uv__tcp_keepalive(handle, handle->socket, enable, delay)) {
+      uv__tcp_keepalive(handle, handle->socket, enable, delay, interval, count)) {
     return -1;
   }
 

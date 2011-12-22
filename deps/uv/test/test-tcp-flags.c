@@ -39,7 +39,7 @@ TEST_IMPL(tcp_flags) {
   r = uv_tcp_nodelay(&handle, 1);
   ASSERT(r == 0);
 
-  r = uv_tcp_keepalive(&handle, 1, 60);
+  r = uv_tcp_keepalive(&handle, 1, 60, 60, 8);
   ASSERT(r == 0);
 
   uv_close((uv_handle_t*)&handle, NULL);
