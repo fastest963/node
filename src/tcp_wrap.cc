@@ -113,6 +113,7 @@ void TCPWrap::Initialize(Handle<Object> target) {
   NODE_SET_PROTOTYPE_METHOD(t, "getpeername", GetPeerName);
   NODE_SET_PROTOTYPE_METHOD(t, "setNoDelay", SetNoDelay);
   NODE_SET_PROTOTYPE_METHOD(t, "setKeepAlive", SetKeepAlive);
+  NODE_SET_PROTOTYPE_METHOD(t, "setNoLinger", SetNoLinger);
 
 #ifdef _WIN32
   NODE_SET_PROTOTYPE_METHOD(t, "setSimultaneousAccepts", SetSimultaneousAccepts);
@@ -240,6 +241,18 @@ Handle<Value> TCPWrap::SetKeepAlive(const Arguments& args) {
   return Undefined();
 }
 
+Handle<Value> TCPWrap::SetNoLinger(const Arguments& args) {
+  HandleScope scope;
+
+  UNWRAP(TCPWrap)
+
+  int enable = args[0]->Int32Value();
+  int r = uv_tcp_no_linger(&wrap->handle_, enable);
+  if (r)
+    SetErrno(uv_last_error(uv_default_loop()));
+
+  return Undefined();
+}
 
 #ifdef _WIN32
 Handle<Value> TCPWrap::SetSimultaneousAccepts(const Arguments& args) {
